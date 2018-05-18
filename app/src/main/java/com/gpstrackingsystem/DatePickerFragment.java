@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,7 +39,8 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         calendar.set(year, month, day);
 
         Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         String s1 = sdf.format(date);
 
         if (flag == START_DATE)

@@ -3,6 +3,7 @@ package com.gpstrackingsystem;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -14,8 +15,20 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -23,6 +36,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static Button startDate, startTime, endDate, endTime;
     private DatePickerFragment datePicker;
     private TimePickerFragment timePicker;
+    FirebaseDatabase database;
+    DatabaseReference myRef;
+
+    public static HashMap<String, String> coordinates = new HashMap<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +67,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.e("orhan33", "izin verilmiş, servis başlatılıyor");
             //startGPS();
         }
+
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("coordinates");
+        new connect().execute();
 
     }
 
@@ -77,11 +99,72 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void showInMap(View view) {
-        Toast.makeText(MainActivity.this, startDate.getText()+", "+ startTime.getText()+" - "+
-                        endDate.getText()+", "+ endTime.getText(),
-                Toast.LENGTH_SHORT).show();
+        String start = startDate.getText().toString() + ", " + startTime.getText().toString();
+        String end = endDate.getText().toString() + ", " + endTime.getText().toString();
+        long mStart=0, mEnd=0;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyy, HH:mm");
+        try {
+            // başlangıç milisaniye
+            Date dStart = sdf.parse(start);
+            mStart = dStart.getTime();
+
+            // bitiş milisaniye
+            Date dEnd = sdf.parse(end);
+            mEnd = dEnd.getTime();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+
         Intent intent = new Intent(MainActivity.this, MapActivity.class);
+        intent.putExtra("start_milis", Long.toString(mStart));
+        intent.putExtra("end_milis", Long.toString(mEnd));
+
+
         startActivity(intent);
+
+    }
+
+    public class connect extends AsyncTask<Void, Void, Void> {
+
+        List<String> info = new ArrayList<>();
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+
+            myRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        HashMap<String, Double> hashMap = (HashMap<String, Double>) ds.getValue();
+                        Double d1 = hashMap.get("latitude");
+                        Double d2 = hashMap.get("longitude");
+
+                        String values = d1 + "," + d2;
+                        coordinates.put(ds.getKey(), values);
+
+                    }
+
+                }
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    Log.e("orhan66", "Failed to read value.", error.toException());
+                }
+
+
+            });
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+        }
+
     }
 
     private boolean runtime_permission() {
@@ -116,16 +199,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startService(intent);
         Log.e("orhan33", "GPS SERVİSİ BAŞLATILDI");
     }
-
-    /*
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Intent intent = new Intent(getApplicationContext(), GPS_Service.class);
-        stopService(intent);
-        Log.e("orhan33", "GPS SERVİSİ DURDURULDU");
-    }
-
-    */
 
 }

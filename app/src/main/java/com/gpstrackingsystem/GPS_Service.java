@@ -47,19 +47,17 @@ public class GPS_Service extends Service {
 
                 Log.e("orhan33", location.toString());
 
-                // get current time
-//                Date currentTime = Calendar.getInstance().getTime();
-//                String primaryKey = currentTime.toString();
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH-mm");
-                String primaryKey = sdf.format(new Date());
+//                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-HH-mm");
+//                String primaryKey = sdf.format(new Date());
+                long milis = System.currentTimeMillis();
 
 
                 // saving to firebase
                 FirebaseDatabase database =  FirebaseDatabase.getInstance();
                 DatabaseReference mRef =  database.getReference().child("coordinates");
-                mRef.child(primaryKey).child("latitude").setValue(location.getLatitude());
-                mRef.child(primaryKey).child("longitude").setValue(location.getLongitude());
+                mRef.child(Long.toString(milis)).child("latitude").setValue(location.getLatitude());
+                mRef.child(Long.toString(milis)).child("longitude").setValue(location.getLongitude());
 
 
             }
@@ -84,7 +82,7 @@ public class GPS_Service extends Service {
 
 
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, locationListener);
     }
 /*
     @Override
