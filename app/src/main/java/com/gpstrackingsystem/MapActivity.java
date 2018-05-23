@@ -61,7 +61,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
             if (Long.parseLong(key) >= start_milis && Long.parseLong(key) <= end_milis){
                 Log.e("orhan00", key+"-"+value);
-                chosen_coordinates.put(key, value);
 
                 String[] values = value.split(",");
 //                mMap.addMarker(new MarkerOptions().position(new LatLng(Long.parseLong(values[0]), Long.parseLong(values[1]))));
@@ -88,14 +87,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         }
 
 
-
+/*
         PolylineOptions polylineOptions = new PolylineOptions();
         polylineOptions.color(Color.RED);
         polylineOptions.width(5);
         polylineOptions.addAll(points);
         polylineOptions.geodesic(true);
         googleMap.addPolyline(polylineOptions);
-
+*/
 //        Map.Entry<String,String> entry = MainActivity.coordinates.entrySet().iterator().next();
 //        String[] values = entry.getValue().split(",");
 /*

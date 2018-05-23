@@ -22,9 +22,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.CollationElementIterator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -117,6 +119,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 
+        List sortedKeys=new ArrayList(coordinates.keySet());
+        Collections.sort(sortedKeys);
+        Collections.reverse(sortedKeys);
 
         Intent intent = new Intent(MainActivity.this, MapActivity.class);
         intent.putExtra("start_milis", Long.toString(mStart));
